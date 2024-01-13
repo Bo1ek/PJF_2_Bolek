@@ -13,7 +13,7 @@
   
     <h1> {{room.name}}</h1>
 
-    <p>{{room.description}}</p>
+    <pre>{{room.description}}</pre>
 
 
     <div class="comment-wrapper">
@@ -25,7 +25,7 @@
                 <a href="{% url 'delete-message' message.id %}">Delete</a>
                 {% endif %}
                 <small>@{{message.user}} {{message.created|timesince}} ago </small>
-                <p>{{message.body}}</p>
+                <pre>{{ message.body}}</pre>
                 <hr>
             </div>
         {% endfor %}
