@@ -93,9 +93,8 @@
               </div>
               <span class="room__topics">{{room.topic}}</span>
               <form id="download" name="download" action="{% url 'room' room.id%}" method="GET">
-                <input type='hidden' name='filename' value={{ filename }}>
-
-                <button type="submit">Download attachment</button>
+                <input type='hidden' name='filename' value="{{ filename }}">
+                <button class="btn" style="background-color: #3498db; color: #ffffff;"><i class="fa fa-download"></i> Download Attachment</button>
               </form>
 
             </div>
