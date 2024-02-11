@@ -1,5 +1,7 @@
+import os
+
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import FileResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -86,10 +88,19 @@ def room(request, pk):
         )
         room.participants.add(request.user)
         return redirect('room', pk=room.id)
-    
-    context = {'room': room,'room_messages': room_messages, 'participants': participants}
+
+    file_name = request.GET.get('filename', '')
+    if file_name:
+        file_path = os.path.join('uploaded_files', file_name)
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="text/plain")
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            return response
+
+
+    context = {'room': room,'room_messages': room_messages, 'participants': participants, 'filename': room.file.name.split('/')[1]}
     return render(request, 'base/room.html',context)
- 
+
 def userProfile(request,pk):
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
@@ -108,11 +119,15 @@ def createRoom(request):
         topic_name = request.POST.get('topic')
         topic, created = Topic.objects.get_or_create(name=topic_name)
 
+        if request.FILES:
+            uploaded_file = request.FILES.get('uploaded_file')
+
         Room.objects.create(
             host = request.user,
             topic = topic,
             name = request.POST.get('name'),
             description = request.POST.get('description'),
+            file = uploaded_file
         )
         return redirect('home')
 

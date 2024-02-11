@@ -19,7 +19,7 @@
           </div>
         </div>
         <div class="layout__body">
-          <form class="form" action="" method="POST">
+          <form class="post-form" action="" enctype="multipart/form-data" method="POST">
             {% csrf_token %}
             <div class="form__group">
               <label for="room_topic">Enter a Topic</label>
@@ -45,7 +45,12 @@
               <label for="room_description">Room Description</label>
               {{form.description}}
             </div>
-<!-- 
+
+            <div class="form__group">
+              <label for="file_upload">Upload file</label>
+              <input type="file" id="uploaded_file" name="uploaded_file">
+            </div>
+<!--
             <div class="form__group">
               <label for="room_topic">Topic</label>
               <input required type="text" name="topic" id="room_topic" list="topic-list" />

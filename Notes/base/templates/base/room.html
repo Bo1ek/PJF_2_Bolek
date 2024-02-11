@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
- 
+
 {% block content %}
- 
+
     <main class="profile-page layout layout--2">
       <div class="container">
         <!-- Room Start -->
@@ -56,7 +56,7 @@
               </a>
             </div>
             {% endif %}
- 
+
             <!-- <button class="action-button" data-id="120" data-delete-url="https://randomuser.me/api/3324923"
             data-edit-url="profile.html">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -92,6 +92,12 @@
                 <pre>{{room.description}}</pre>
               </div>
               <span class="room__topics">{{room.topic}}</span>
+              <form id="download" name="download" action="{% url 'room' room.id%}" method="GET">
+                <input type='hidden' name='filename' value={{ filename }}>
+
+                <button type="submit">Download attachment</button>
+              </form>
+
             </div>
             <div class="room__conversation">
               <div class="threads scroll">
@@ -123,7 +129,7 @@
                   <div class="thread__details">
                     {{message.body}}
                   </div>
- 
+
                 </div>
                 {% endfor %}
               </div>
@@ -134,7 +140,7 @@
           </div>
         </div>
         <!-- Room End -->
- 
+
         <!--   Start -->
         <div class="participants">
           <h3 class="participants__top">Participants <span>({{participants.count}} Joined)</span></h3>
