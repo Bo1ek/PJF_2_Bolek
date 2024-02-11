@@ -82,14 +82,14 @@ def room(request, pk):
         message = Message.objects.create(
         user=request.user,
         room=room,
-        body=request.POST.get('body')
+        body=request.POST.get('comment')
         )
         room.participants.add(request.user)
         return redirect('room', pk=room.id)
     
     context = {'room': room,'room_messages': room_messages, 'participants': participants}
     return render(request, 'base/room.html',context)
-
+ 
 def userProfile(request,pk):
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
