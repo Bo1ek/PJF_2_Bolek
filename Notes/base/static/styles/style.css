@@ -1119,6 +1119,9 @@ a {
   background: transparent;
 }
 
+.room__details > pre {
+  color:var(--color-light-gray);
+}
 .room__message > form > input {
   resize: none;
   background-color: var(--color-dark-light);
@@ -1252,5 +1255,32 @@ a {
   outline: none;
   background: none;
   padding: 5px;
+  width: 100%;
+}
+.form {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+.form-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.form-table td {
+  padding: 10px;
+}
+
+.form input,
+.form textarea,
+.form select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.form button {
   width: 100%;
 }
