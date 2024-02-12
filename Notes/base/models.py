@@ -2,6 +2,7 @@ import base64
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # Create your models here.
 
@@ -41,3 +42,15 @@ class Message(models.Model):
 
     def __str__(self):
         return self.body[0:50]
+
+class CalendarEvent(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    group = models.TextField()
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+    @property
+    def get_html_url(self):
+        url = reverse('calendar_event_edit', args=(self.id,))
+        return f'<a href="{url}"> {self.title} </a>'

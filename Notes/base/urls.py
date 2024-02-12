@@ -1,10 +1,14 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
     path('login/', views.loginPage, name="login"),
     path('logout/', views.logoutUser, name="logout"),
     path('register/', views.registerPage, name="register"),
+
+    path('calendar/', views.CalendarView.as_view(), name='calendar'),
+    path('calendar_event/new/', views.calendar_event, name='calendar_event_new'),
+    path('calendar_event/edit/(<str:event_id>)/', views.calendar_event, name='calendar_event_edit'),
 
     path('', views.home, name="home"),
     path('room/<str:pk>', views.room, name="room"),

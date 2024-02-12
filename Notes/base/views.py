@@ -1,18 +1,24 @@
 import os
- 
+import calendar
+from datetime import date, datetime, timedelta
+
+
+from .utils import Calendar
+
 import django.core.files.uploadedfile
-from django.shortcuts import render, redirect
-from django.http import FileResponse, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404, reverse
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from .models import Room, Topic, Message
-from .forms import RoomForm, UserForm
+from .models import Room, Topic, Message, CalendarEvent
+from .forms import RoomForm, UserForm, CalendarEventForm
 from django.db.models import Q
- 
- 
+from django.utils.safestring import mark_safe
+from django.views import generic
+
  
 def loginPage(request):
     page = 'login'
@@ -98,10 +104,10 @@ def room(request, pk):
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
             return response
  
-    if '/' in room.file.name:
-        room_file_name = room.file.name.split('/')
+    if room.file.name:
+        room_file_name = room.file.name.split('/')[1]
     else:
-        room_file_name = room.file.name
+        room_file_name = ''
  
     context = {'room': room,'room_messages': room_messages, 'participants': participants, 'filename': room_file_name}
     return render(request, 'base/room.html',context)
@@ -200,3 +206,54 @@ def updateUser(request):
             return redirect('user-profile', pk=user.id)
     context = {'form': form}
     return render(request, 'base/update-user.html', context)
+
+
+class CalendarView(generic.ListView):
+    model = CalendarEvent
+    template_name = 'base/calendar.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # use today's date for the calendar
+        d = get_date(self.request.GET.get('month', None))
+        cal = Calendar(d.year, d.month)
+        html_cal = cal.formatmonth(withyear=True)
+        context['calendar'] = mark_safe(html_cal)
+        context['prev_month'] = prev_month(d)
+        context['next_month'] = next_month(d)
+        return context
+
+def get_date(req_month):
+    if req_month:
+        year, month = (int(x) for x in req_month.split('-'))
+        return date(year, month, day=1)
+    return datetime.today()
+
+def prev_month(d):
+    first = d.replace(day=1)
+    prev_month = first - timedelta(days=1)
+    month = 'month=' + str(prev_month.year) + '-' + str(prev_month.month)
+    return month
+
+def next_month(d):
+    days_in_month = calendar.monthrange(d.year, d.month)[1]
+    last = d.replace(day=days_in_month)
+    next_month = last + timedelta(days=1)
+    month = 'month=' + str(next_month.year) + '-' + str(next_month.month)
+    return month
+
+
+@login_required(login_url='/login')
+def calendar_event(request, event_id=None):
+    instance = CalendarEvent()
+    if event_id:
+        instance = get_object_or_404(CalendarEvent, pk=event_id)
+    else:
+        instance = CalendarEvent()
+
+    form = CalendarEventForm(request.POST or None, instance=instance)
+    if request.POST and form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse('calendar'))
+    return render(request, 'base/calendar_event.html', {'form': form})

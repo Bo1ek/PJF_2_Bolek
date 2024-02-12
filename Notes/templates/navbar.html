@@ -16,6 +16,10 @@
           <input name="q" placeholder="Search for rooms..." />
         </label>
       </form>
+
+    <button onclick="location.href = {% url 'calendar' %}" id="calendar" class="btn btn--main" >Calendar</button>
+
+
       <nav class="header__menu">
 
         {% if request.user.is_authenticated %}
