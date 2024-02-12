@@ -36,9 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
 
     'base.apps.BaseConfig',
+
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -102,6 +105,14 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
+ASGI_APPLICATION = 'Notes.asgi.application'
 
 
 # Internationalization

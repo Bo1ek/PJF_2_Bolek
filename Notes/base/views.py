@@ -257,3 +257,8 @@ def calendar_event(request, event_id=None):
         form.save()
         return HttpResponseRedirect(reverse('calendar'))
     return render(request, 'base/calendar_event.html', {'form': form})
+
+@login_required(login_url='/login')
+def chat(request, *args, **kwargs):
+    context = {}
+    return render(request, "base/chat.html", context)
