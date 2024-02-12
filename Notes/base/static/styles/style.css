@@ -82,6 +82,18 @@ a {
   box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
   font-weight: 500;
 }
+.button-container{
+  display: flex;
+  align-items:center;
+  justify-content: center;
+}
+.btn-new-event {
+  margin: auto; 
+}
+
+.btn-next-month {
+  margin-left: auto; 
+}
 
 .btn--link {
   border-radius: 0;
@@ -1214,10 +1226,17 @@ a {
 
 .btn {
   outline: none;
-  color: black;
-  background-color: transparent;
-  box-shadow: 0 0 0 0;
+  color: white; 
+  background-color: var(--color-main); 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  border: none;
+  border-radius: 5px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s; 
+  font-weight: 500;
 }
+
 
 .clearfix {
   margin: 15px;
