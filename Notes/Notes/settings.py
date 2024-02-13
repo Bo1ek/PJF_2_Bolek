@@ -37,14 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'daphne',
-    'Notes',
     'django.contrib.staticfiles',
 
     'base.apps.BaseConfig',
 
     'channels',
 ]
-ASGI_APPLICATION = 'core.asgi.application'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

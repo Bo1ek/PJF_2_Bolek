@@ -19,6 +19,16 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.views import generic
 
+from datetime import datetime
+
+from typing import AsyncGenerator
+from django.shortcuts import render, redirect
+from django.http import HttpRequest, StreamingHttpResponse, HttpResponse
+from . import models
+import json
+import random
+import asyncio
+
  
 def loginPage(request):
     page = 'login'
@@ -215,13 +225,19 @@ class CalendarView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        if self.request.GET:
+            group = self.request.GET['q']
+        else:
+            group = ''
+
         # use today's date for the calendar
         d = get_date(self.request.GET.get('month', None))
         cal = Calendar(d.year, d.month)
-        html_cal = cal.formatmonth(withyear=True)
+        html_cal = cal.formatmonth(group, withyear=True)
         context['calendar'] = mark_safe(html_cal)
         context['prev_month'] = prev_month(d)
         context['next_month'] = next_month(d)
+
         return context
 
 def get_date(req_month):
@@ -256,69 +272,50 @@ def calendar_event(request, event_id=None):
     if request.POST and form.is_valid():
         form.save()
         return HttpResponseRedirect(reverse('calendar'))
-    return render(request, 'base/calendar_event.html', {'form': form})
+    return render(request, 'base/calendar_event.html', {'form': form, 'event_id': instance.pk})
+
 
 @login_required(login_url='/login')
-def chat(request, *args, **kwargs):
-    context = {}
-    return render(request, "base/chat.html", context)
-
-from datetime import datetime
-
-from typing import AsyncGenerator
-from django.shortcuts import render, redirect
-from django.http import HttpRequest, StreamingHttpResponse, HttpResponse
-from . import models
-import json
-import random
-import asyncio
-
-def lobby(request: HttpRequest) -> HttpResponse:
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        if username:
-            request.session['username'] = username
-        else:
-            names = [
-                "Horatio", "Benvolio", "Mercutio", "Lysander", "Demetrius", "Sebastian", "Orsino",
-                "Malvolio", "Hero", "Bianca", "Gratiano", "Feste", "Antonio", "Lucius", "Puck", "Lucio",
-                "Goneril", "Edgar", "Edmund", "Oswald"
-            ]
-            request.session['username'] = f"{random.choice(names)}-{hash(datetime.now().timestamp())}"
-
-        return redirect('/chat2')
+def calendar_event_delete(request, event_id=None):
+    if event_id:
+        instance = get_object_or_404(CalendarEvent, pk=event_id)
     else:
-        return render(request, 'base/lobby.html')
+        instance = CalendarEvent()
+
+    if request.method == 'POST':
+        instance.delete()
+        return redirect('calendar')
+    return render(request, 'base/calendar_event_delete.html', {'event_id': instance.pk, 'event_name': instance.title})
 
 
-def chat2(request: HttpRequest) -> HttpResponse:
-    if not request.session.get('username'):
-        return redirect('lobby')
-    return render(request, 'base/chat2.html')
+@login_required(login_url='/login')
+def chat(request: HttpRequest) -> HttpResponse:
+    return render(request, 'base/chat.html')
 
 
-def create_message(request: HttpRequest) -> HttpResponse:
+@login_required(login_url='/login')
+def create_message(request) -> HttpResponse:
     content = request.POST.get("content")
-    username = request.session.get("username")
+    user = request.user
 
-    if not username:
+    if not user:
         return HttpResponse(status=403)
-    author, _ = models.Author.objects.get_or_create(name=username)
+    user, _ = models.User.objects.get_or_create(id=user.id)
 
     if content:
-        models.Message2.objects.create(author=author, content=content)
+        models.ChatMessage.objects.create(author=user, content=content)
         return HttpResponse(status=201)
     else:
         return HttpResponse(status=200)
-
 
 async def stream_chat_messages(request: HttpRequest) -> StreamingHttpResponse:
     """
     Streams chat messages to the client as we create messages.
     """
+
     async def event_stream():
         """
-        We use this function to send a continuous stream of data 
+        We use this function to send a continuous stream of data
         to the connected clients.
         """
         async for message2 in get_existing_messages():
@@ -328,8 +325,8 @@ async def stream_chat_messages(request: HttpRequest) -> StreamingHttpResponse:
 
         # Continuously check for new messages
         while True:
-            new_messages = models.Message2.objects.filter(id__gt=last_id).order_by('created_at').values(
-                'id', 'author__name', 'content'
+            new_messages = models.ChatMessage.objects.filter(id__gt=last_id).order_by('created_at').values(
+                'id', 'author__username', 'content'
             )
             async for message2 in new_messages:
                 yield f"data: {json.dumps(message2)}\n\n"
@@ -337,14 +334,14 @@ async def stream_chat_messages(request: HttpRequest) -> StreamingHttpResponse:
             await asyncio.sleep(0.1)  # Adjust sleep time as needed to reduce db queries.
 
     async def get_existing_messages() -> AsyncGenerator:
-        messages = models.Message2.objects.all().order_by('created_at').values(
-        'id', 'author__name', 'content'
+        messages = models.ChatMessage.objects.all().order_by('created_at').values(
+        'id', 'author__username', 'content'
         )
         async for message2 in messages:
             yield f"data: {json.dumps(message2)}\n\n"
 
     async def get_last_message_id() -> int:
-        last_message = await models.Message2.objects.all().alast()
+        last_message = await models.ChatMessage.objects.all().alast()
         return last_message.id if last_message else 0
 
     return StreamingHttpResponse(event_stream(), content_type='text/event-stream')

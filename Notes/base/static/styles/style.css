@@ -87,12 +87,28 @@ a {
   align-items:center;
   justify-content: center;
 }
+.button-container2{
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  margin-bottom:3rem;
+}
 .btn-new-event {
-  margin: auto; 
+  margin: 0 auto;
+}
+
+.btn-prev-month {
+  display: flex;
+    align-items:center;
+  justify-content: center;
+  margin-left: 9rem;
 }
 
 .btn-next-month {
-  margin-left: auto; 
+  display: flex;
+    align-items:center;
+  justify-content: center;
+  margin-right: 10rem;
 }
 
 .btn--link {
@@ -109,6 +125,17 @@ a {
 .btn--main {
   background-color: var(--color-main);
   color: var(--color-dark);
+    display: flex;
+    align-items:left;
+  justify-content: left;
+}
+
+.btn--main {
+  background-color: var(--color-main);
+  color: var(--color-dark);
+    display: flex;
+    align-items:left;
+  justify-content: left;
 }
 
 .btn:hover {
@@ -284,13 +311,14 @@ a {
 
 .header > .container {
   display: flex;
-  gap: 9.5rem;
+  gap: 1.5rem;
 }
 
 .header__logo,
 .header__user {
   display: flex;
   gap: 2rem;
+  margin-right: 12rem;
   align-items: center;
 }
 
@@ -312,6 +340,8 @@ a {
   align-items: center;
   gap: 1rem;
   border-radius: 4px;
+   margin-left: 9rem;
+   margin-right: 10rem;
 }
 
 .header__search svg {

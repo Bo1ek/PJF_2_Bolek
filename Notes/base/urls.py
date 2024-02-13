@@ -8,8 +8,10 @@ urlpatterns = [
     path('register/', views.registerPage, name="register"),
 
     path('calendar/', views.CalendarView.as_view(), name='calendar'),
+    path('calendar/filter', views.CalendarView.as_view(), name='calendar_filter'),
     path('calendar_event/new/', views.calendar_event, name='calendar_event_new'),
     path('calendar_event/edit/(<str:event_id>)/', views.calendar_event, name='calendar_event_edit'),
+    path('calendar_event/delete/(<str:event_id>)',views.calendar_event_delete, name='calendar_event_delete'),
 
     path('', views.home, name="home"),
     path('room/<str:pk>', views.room, name="room"),
@@ -22,10 +24,7 @@ urlpatterns = [
     path('delete-message/<str:pk>/', views.deleteMessage, name="delete-message"),
     path('update-user/', views.updateUser, name="update-user"),
 
-    path("chat/", views.chat, name="chat"),
-
-    path('lobby/', views.lobby, name='lobby'),
-    path('chat2/', views.chat2, name='chat2'),
+    path('chat/', views.chat, name='chat'),
     path('create-message/', views.create_message, name='create-message'),
     path('stream-chat-messages/', views.stream_chat_messages, name='stream-chat-messages'),
 ]

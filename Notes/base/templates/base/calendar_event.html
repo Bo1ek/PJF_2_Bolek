@@ -7,6 +7,7 @@ Calendar Event
 {% block content %}
 <div class="clearfix">
   <a class="btn btn-info left" href="{% url 'calendar' %}"> Calendar </a>
+  <a class="btn btn-info right" href="{% url 'calendar_event_delete' event_id %}"> Delete Event </a>
 </div>
 
 <form method="post" class="form">
