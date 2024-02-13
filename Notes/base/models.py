@@ -54,3 +54,13 @@ class CalendarEvent(models.Model):
     def get_html_url(self):
         url = reverse('calendar_event_edit', args=(self.id,))
         return f'<a href="{url}"> {self.title} </a>'
+
+
+class Author(models.Model):
+    name = models.CharField(max_length=500)
+
+
+class Message2(models.Model):
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)

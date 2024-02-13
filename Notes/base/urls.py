@@ -23,4 +23,9 @@ urlpatterns = [
     path('update-user/', views.updateUser, name="update-user"),
 
     path("chat/", views.chat, name="chat"),
+
+    path('lobby/', views.lobby, name='lobby'),
+    path('chat2/', views.chat2, name='chat2'),
+    path('create-message/', views.create_message, name='create-message'),
+    path('stream-chat-messages/', views.stream_chat_messages, name='stream-chat-messages'),
 ]
