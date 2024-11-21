@@ -26,8 +26,9 @@ SECRET_KEY = 'django-insecure-hq!-bw=&i2h!2#849ye&825+oqvz5p#qz-#)6jcw%=&2_eh@m6
 DEBUG = False
 
 # Just for Render deployment
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*','https://pjf-2-bolek.onrender.com/']
 
+CSRF_TRUSTED_ORIGINS = ['https://pjf-2-bolek.onrender.com/']
 # Application definition
 
 INSTALLED_APPS = [
